@@ -11,26 +11,28 @@ class ShoppingSystem:
         self.fruits = {
             'apple': Fruit('蘋果', 8),
             'strawberry': Fruit('草莓', 13),
-            'mango': Fruit('芒果', 20)
+            'mango': Fruit('芒果', 20),
+            'abc':Fruit('哈密瓜',20)
         }
     
-    def calculate_price(self, apple_weight=0, strawberry_weight=0, mango_weight=0, 
+    def calculate_price(self, apple_weight=0, strawberry_weight=0, mango_weight=0, abc_weight=0,
                        strawberry_discount=1.0, discount_threshold=0, discount_amount=0):
         # 計算總價
         apple_price = self.fruits['apple'].calculate_price(apple_weight)
         strawberry_price = self.fruits['strawberry'].calculate_price(strawberry_weight, strawberry_discount)
         mango_price = self.fruits['mango'].calculate_price(mango_weight)
+        abc_price = self.fruits['abc'].calculate_price(abc_weight)
         
-        total = apple_price + strawberry_price + mango_price
+        total = apple_price + strawberry_price + mango_price + abc_price
         
         # 應用滿減
         if discount_threshold > 0 and total >= discount_threshold:
             total -= discount_amount
         return total
     
-    def calculate_customer_a(self, apple_weight, strawberry_weight):
+    def calculate_customer_a(self, apple_weight, strawberry_weight,abc_weight):
         """顧客A：只買蘋果和草莓，無促銷"""
-        return self.calculate_price(apple_weight, strawberry_weight)
+        return self.calculate_price(apple_weight, strawberry_weight,abc_weight)
     
     def calculate_customer_b(self, apple_weight, strawberry_weight, mango_weight):
         """顧客B：買三種水果，無促銷"""
@@ -40,12 +42,12 @@ class ShoppingSystem:
         """顧客C：買三種水果，草莓8折"""
         return self.calculate_price(apple_weight, strawberry_weight, mango_weight, strawberry_discount=0.8)
     
-    def calculate_customer_d(self, apple_weight, strawberry_weight, mango_weight):
+    def calculate_customer_d(self, apple_weight, strawberry_weight, mango_weight,abc_weight):
         """顧客D：買三種水果，草莓8折，滿100減10"""
-        return self.calculate_price(apple_weight, strawberry_weight, mango_weight, 
-                                   strawberry_discount=0.8, discount_threshold=100, discount_amount=10)
+        return self.calculate_price(apple_weight, strawberry_weight, mango_weight, abc_weight,
+                                   strawberry_discount=0.8, discount_threshold=200, discount_amount=50)
     
-    def print_receipt(self, apple_weight, strawberry_weight, mango_weight, 
+    def print_receipt(self, apple_weight, strawberry_weight, mango_weight, abc_weight,
                      strawberry_discount=1.0, discount_threshold=0, discount_amount=0, customer_name=""):
         """打印購物小票"""
         print(f"\n{'='*30}")
@@ -59,6 +61,7 @@ class ShoppingSystem:
         apple_price = self.fruits['apple'].calculate_price(apple_weight)
         strawberry_price = self.fruits['strawberry'].calculate_price(strawberry_weight, strawberry_discount)
         mango_price = self.fruits['mango'].calculate_price(mango_weight)
+        abc_price = self.fruits['abc'].calculate_price(abc_weight)
         
         if apple_weight > 0:
             print(f"蘋果: {apple_weight}斤 × {self.fruits['apple'].price}元/斤 = {apple_price:.1f}元")
@@ -67,7 +70,9 @@ class ShoppingSystem:
             print(f"草莓: {strawberry_weight}斤 × {self.fruits['strawberry'].price}元/斤{discount_text} = {strawberry_price:.1f}元")
         if mango_weight > 0:
             print(f"芒果: {mango_weight}斤 × {self.fruits['mango'].price}元/斤 = {mango_price:.1f}元")
-        subtotal = apple_price + strawberry_price + mango_price
+        if abc_weight>0:
+            print(f"哈密瓜: {abc_weight}斤 × {self.fruits['abc'].price}元/斤 = {abc_price:.1f}元")
+        subtotal = apple_price + strawberry_price + mango_price + abc_price
         print('-'*30)
         total = subtotal
         if discount_threshold > 0 and subtotal >= discount_threshold:
@@ -95,20 +100,15 @@ def get_user_input(fruit_name, allow_zero=True):
         except ValueError:
             print("錯誤: 請輸入整數，請重新輸入")
 
-def validate_weights(apple_weight, strawberry_weight, mango_weight, customer_type):
+def validate_weights(apple_weight, strawberry_weight, mango_weight,abc_weight, customer_type):
     """驗證輸入的水果斤數"""
     # 檢查是否全為零
-    if apple_weight == 0 and strawberry_weight == 0 and mango_weight == 0:
+    if apple_weight == 0 and strawberry_weight == 0 and mango_weight == 0 and abc_weight==0:
         print("錯誤: 所有水果斤數不能都為零，請至少購買一種水果")
         return False
     
-    # 檢查顧客A是否購買了芒果
-    if customer_type == 'A' and mango_weight > 0:
-        print("錯誤: 顧客A方案不支持購買芒果")
-        return False
-    
     # 檢查是否為負數（在get_user_input中已經檢查，這裡再次確認）
-    if apple_weight < 0 or strawberry_weight < 0 or mango_weight < 0:
+    if apple_weight < 0 or strawberry_weight < 0 or mango_weight < 0 or abc_weight<0:
         print("錯誤: 水果斤數不能為負數")
         return False
     
@@ -119,9 +119,9 @@ def interactive_mode():
     while True:
         print("請選擇顧客類型:")
         print("A: 只買蘋果和草莓，無促銷")
-        print("B: 買三種水果，無促銷")
-        print("C: 買三種水果，草莓8折")
-        print("D: 買三種水果，草莓8折，滿100減10")
+        print("B: 買四種水果，無促銷")
+        print("C: 買四種水果，草莓8折")
+        print("D: 買四種水果，草莓8折，滿200減50")
         print("Q: 退出系統")
         choice = input("請輸入選擇 (A/B/C/D/Q): ").strip().upper()
         
@@ -137,17 +137,18 @@ def interactive_mode():
             while True:
                 apple_weight = get_user_input("蘋果")
                 strawberry_weight = get_user_input("草莓")
+                abc_weight= get_user_input("哈密瓜")
                 mango_weight = 0
                 
                 # 驗證輸入
-                if validate_weights(apple_weight, strawberry_weight, mango_weight, choice):
+                if validate_weights(apple_weight, strawberry_weight, mango_weight,abc_weight, choice):
                     break
                 else:
                     print("請重新輸入...")
                     
             # 計算並顯示結果
             total = system.print_receipt(
-                apple_weight, strawberry_weight, mango_weight, 
+                apple_weight, strawberry_weight, mango_weight,abc_weight, 
                 customer_name=choice
             )
             
@@ -156,9 +157,11 @@ def interactive_mode():
                 apple_weight = get_user_input("蘋果")
                 strawberry_weight = get_user_input("草莓")
                 mango_weight = get_user_input("芒果")
+                abc_weight=get_user_input('哈密瓜')
+
                 
                 # 驗證輸入
-                if validate_weights(apple_weight, strawberry_weight, mango_weight, choice):
+                if validate_weights(apple_weight, strawberry_weight, mango_weight,abc_weight, choice):
                     break
                 else:
                     print("請重新輸入...")
@@ -169,12 +172,12 @@ def interactive_mode():
             else:
                 strawberry_discount = 1.0
 
-            discount_threshold = 100 if choice == 'D' else 0
-            discount_amount = 10 if choice == 'D' else 0
+            discount_threshold = 200 if choice == 'D' else 0
+            discount_amount = 50 if choice == 'D' else 0
             
             # 計算並顯示結果
             total = system.print_receipt(
-                apple_weight, strawberry_weight, mango_weight,
+                apple_weight, strawberry_weight, mango_weight,abc_weight,
                 strawberry_discount=strawberry_discount,
                 discount_threshold=discount_threshold,
                 discount_amount=discount_amount,

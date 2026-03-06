@@ -78,7 +78,7 @@ class ShoppingSystem:
 class FruitPriceCalculatorGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("水果價格試算系統 - 全功能版")
+        self.root.title("水果價格試算系統")
         
         # 設定全螢幕
         self.root.attributes('-fullscreen', True)
@@ -136,7 +136,6 @@ class FruitPriceCalculatorGUI:
         
         # 顧客類型變數
         self.selected_customer = tk.StringVar(value=list(self.customer_options.keys())[0])
-        
         # 芒果輸入框框架引用
         self.mango_frame = None
         
@@ -686,10 +685,7 @@ def main():
     root = tk.Tk()
     
     # 設定視窗圖標
-    try:
-        root.iconbitmap('fruit_icon.ico')
-    except:
-        pass
+    root.iconbitmap('fruit_icon.ico')
     
     # 建立應用程式
     app = FruitPriceCalculatorGUI(root)
